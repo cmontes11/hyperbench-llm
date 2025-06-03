@@ -74,6 +74,7 @@ args = TrainingArguments(
     bf16=True,                        
     optim="paged_adamw_8bit",
     logging_steps=25,
+    include_tokens_per_second=True,
     save_strategy="epoch"
 )
 
