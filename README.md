@@ -1,5 +1,5 @@
 # hyperbench-llm
-Tools and utilities for benchmarking and optimizing **Llama‑8B** so it can run efficiently on a single RTX&nbsp;4080.
+Tools and utilities for benchmarking and optimizing [**Llama‑8B**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) so it can run efficiently on a single RTX&nbsp;4080.
 
 The project aims to understand the memory and performance trade‑offs when deploying Llama‑8B on consumer GPUs. Training or fine‑tuning typically happens on powerful cloud hardware, while inference and benchmarking take place locally. The scripts below measure memory usage, merge LoRA adapters, and provide simple training helpers so you can experiment with different setups.
 
@@ -45,11 +45,16 @@ The project aims to understand the memory and performance trade‑offs when depl
    ```bash
    accelerate launch train_naive.py
    ```
+   Training metrics are logged to [Weights & Biases](https://wandb.ai/) if the `wandb` package is installed and configured.
+
+Before running GPU tests or training, set the `HF_TOK` environment variable with your Hugging Face token so the scripts can download the model.
 
 ## Dataset Recommendations
 
+For fast code benchmarking consider the following datasets:
 
-For fast code benchmarking consider `bigcode/the-stack-smol` (subset) or the `mbpp` dataset.
+- [`bigcode/the-stack-smol`](https://huggingface.co/datasets/bigcode/the-stack-smol)
+- [`google-research-datasets/mbpp`](https://huggingface.co/datasets/google-research-datasets/mbpp)
 
 ## Completed
 
