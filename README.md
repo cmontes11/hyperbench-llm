@@ -16,6 +16,7 @@ Scripts now live in **`scripts/`**, configurations in **`configs/`**, and genera
 * **scripts/gpu_memory_test.py** – Show detailed GPU memory footprint for a given model.
 * **scripts/train_naive.py** – Minimal example for finetuning or adapter training.
 * **scripts/train_fast.py** – Speed-tuned training for A100 GPUs.
+* **scripts/train_scaling.py** – Variable dataset training for scaling-law experiments using the sweep's best hyper-parameters.
 * **scripts/train_h100.py** – Sweep-ready training script for H100 GPUs.
 * **configs/qlora_loss.yaml** – Example W&B sweep configuration.
 * **environment.yml** – Conda environment specification with all required packages.
@@ -58,7 +59,11 @@ Scripts now live in **`scripts/`**, configurations in **`configs/`**, and genera
    ```bash
    accelerate launch scripts/train_fast.py
    ```
-6. Run the H100 parameter sweep with Weights & Biases:
+6. Run the variable dataset script (uses the sweep's best hyper-parameters):
+   ```bash
+   accelerate launch scripts/train_scaling.py --rows 50000
+   ```
+7. Run the H100 parameter sweep with Weights & Biases:
    ```bash
    wandb sweep configs/qlora_loss.yaml
    wandb agent <ENTITY/PROJECT/SWEEP_ID>
