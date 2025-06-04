@@ -13,6 +13,11 @@ bnb = BitsAndBytesConfig(
 )
 
 hf_token = os.getenv("HF_TOK")
+if hf_token is None:
+    raise EnvironmentError(
+        "HF_TOK environment variable not set. Please set it to your HuggingFace token "
+        "before running this script."
+    )
 
 tok = AutoTokenizer.from_pretrained(
     "meta-llama/Meta-Llama-3-8B-Instruct",
