@@ -1,8 +1,15 @@
+"""Simple LoRA fine-tuning example for smaller GPUs.
+
+This script demonstrates a minimal training loop using 4-bit quantization
+and LoRA adapters. It is intended as a starting point for experiments and
+logs basic training metrics using the Hugging Face Trainer API.
+"""
+
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
-from transformers import TrainingArguments, Trainer  
-from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training   
-from datasets import load_dataset            
-import torch                                      
+from transformers import TrainingArguments, Trainer
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from datasets import load_dataset
+import torch
 import os
 
 # load 4 bit

@@ -1,3 +1,4 @@
+# Weights & Biases sweep configuration targeting low validation loss
 method: bayes
 metric:
   name: eval_loss

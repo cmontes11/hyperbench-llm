@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-"""
-Param-sweep-ready LoRA fine-tune for Llama-3 8B on H100 NVL.
+"""Parameter sweep training script targeting H100 GPUs.
 
-Every tunable hyper-parameter is exposed on the CLI so that
-WandB’s sweep agent can drive the grid / Bayesian search.
+The goal of this script is to expose every relevant hyper-parameter on
+the command line so that Weights & Biases can orchestrate a sweep over
+the search space. It performs LoRA fine-tuning of Llama-3 8B and logs
+token throughput and loss metrics during training.
 """
 
 import argparse, os, torch

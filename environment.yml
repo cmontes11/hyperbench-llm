@@ -1,3 +1,6 @@
+# Conda environment definition for hyperbench-llm
+# Includes PyTorch, Transformers and supporting libraries for running
+# the benchmarking and training scripts.
 name: qlora
 channels:
   - defaults

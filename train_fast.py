@@ -1,4 +1,9 @@
-# Fine-tuning Llama-3 8B with speed-optimal settings for A100 GPU
+"""Fine-tune Llama-3 8B with optimized settings for A100 GPUs.
+
+The script demonstrates a fast LoRA training setup using 4-bit quantization
+and a high batch size. It is intended for quick experimentation on a single
+GPU and saves only the adapter weights after training.
+"""
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from transformers import TrainingArguments, Trainer
