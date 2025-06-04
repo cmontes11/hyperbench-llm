@@ -48,7 +48,16 @@ The project aims to understand the memory and performance trade‑offs when depl
 
 ## Dataset Recommendations
 
+
 For fast code benchmarking consider `bigcode/the-stack-smol` (subset) or the `mbpp` dataset.
+
+## Completed
+
+- [x] Benchmarking utilities
+- [x] LoRA adapter merging
+- [x] GPU memory profiler
+- [x] Naive training example
+- [x] Environment setup guide
 
 ## TODO
 
