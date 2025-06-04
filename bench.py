@@ -2,7 +2,6 @@ import time
 import torch
 import json
 import argparse
-from pathlib import Path
 
 from transformers import (
     AutoModelForCausalLM,
