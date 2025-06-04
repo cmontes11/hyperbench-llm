@@ -1,0 +1,14 @@
+method: bayes
+metric:
+  name: eval_loss
+  goal: minimize
+parameters:
+  lora_r:        {values: [8,16,32,64]}
+  lora_alpha:    {values: [16,32,64,128]}
+  lr:            {values: [3e-4,1e-4,3e-5]}
+  epochs:        {value: 1}
+  rows:          {value: 10000}
+  batch_size:    {value: 24}
+  max_seq_len:   {value: 512}
+  bf16:          {value: true}
+program: train_h100.py
