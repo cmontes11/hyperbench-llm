@@ -1,7 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 import argparse
-from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser()
