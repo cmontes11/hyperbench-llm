@@ -79,6 +79,59 @@ For fast code benchmarking consider the following datasets:
 - [`bigcode/the-stack-smol`](https://huggingface.co/datasets/bigcode/the-stack-smol)
 - [`google-research-datasets/mbpp`](https://huggingface.co/datasets/google-research-datasets/mbpp)
 
+## Baseline Benchmark Results (RTX 4080)
+
+The following results were obtained on a single RTX&nbsp;4080 using
+`bigcode/the-stack-smol` to evaluate perplexity. The fine‑tuned model
+was produced by merging its LoRA adapter into the base weights.
+
+### Base Model
+
+```bash
+python scripts/bench.py --ckpt meta-llama/Meta-Llama-3-8B-Instruct \
+  --ppl_dataset bigcode/the-stack-smol \
+  --ppl_split train[:1024] \
+  --out base_bench.json
+```
+
+Output:
+
+```json
+{
+  "ram_footprint_gb": 5.59,
+  "gpu_peak_gb": 7.24,
+  "tok_per_sec": 17.75,
+  "latency_ms_first_tok": 56.3,
+  "elapsed_s": 14.42,
+  "perplexity": 3.69
+}
+```
+
+### Merged Fine‑tuned Model
+
+```bash
+python scripts/bench.py --ckpt merged_model_dir \
+  --ppl_dataset bigcode/the-stack-smol \
+  --ppl_split train[:1024] \
+  --out merged_bench.json
+```
+
+Output:
+
+```json
+{
+  "ram_footprint_gb": 5.59,
+  "gpu_peak_gb": 7.24,
+  "tok_per_sec": 18.08,
+  "latency_ms_first_tok": 55.3,
+  "elapsed_s": 14.16,
+  "perplexity": 2.42
+}
+```
+
+The merged model improves perplexity from **3.69** to **2.42** while
+keeping memory usage constant and slightly increasing tokens per second.
+
 ## Parameter Sweep Results
 
 This release introduces an automated hyper-parameter sweep using
