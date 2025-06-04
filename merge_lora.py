@@ -1,3 +1,10 @@
+"""Merge a LoRA adapter into its base model for inference.
+
+This script loads both the full-precision base model and its LoRA weights,
+combines them into a single set of parameters, and saves the merged model
+to disk. Use this after training to deploy without the PEFT dependency.
+"""
+
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 import argparse

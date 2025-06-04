@@ -1,3 +1,10 @@
+"""Report the GPU memory footprint of a quantized model.
+
+This helper script loads Llama-3 in 4-bit precision and prints the amount
+of memory consumed on the GPU after loading. It requires a Hugging Face
+token via the ``HF_TOK`` environment variable to download the weights.
+"""
+
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import os
 

@@ -1,3 +1,10 @@
+"""Benchmark utility for quantized language models.
+
+This script loads a model (optionally with a LoRA adapter) and reports
+memory usage, generation latency and perplexity metrics for a given
+prompt or dataset. The resulting statistics are written to a JSON file.
+"""
+
 import time
 import torch
 import json
