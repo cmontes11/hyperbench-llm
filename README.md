@@ -118,7 +118,7 @@ lora_alpha lora_r     lr   train_loss
 - [ ] Model compression techniques
 
 ### v0.3
-- [ ] Distributed multi-GPU training
+- [ ] Deploy to RTX 4080 for maximizing tokens/sec
 - [ ] Quantization experiments
 
 
