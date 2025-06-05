@@ -17,6 +17,7 @@ Launch with:
 """
 
 import argparse
+import json
 import os
 import torch
 from transformers import (
@@ -28,8 +29,12 @@ from datasets import load_dataset
 
 # ----- CLI -----
 parser = argparse.ArgumentParser()
-parser.add_argument("--rows", type=int, default=10_000,
-                    help="number of training rows to use")
+parser.add_argument(
+    "--rows",
+    type=int,
+    default=10_000,
+    help="number of training rows to use",
+)
 args = parser.parse_args()
 
 # ----- 4-bit quantized model -----
@@ -82,6 +87,8 @@ model.gradient_checkpointing_enable()
 
 # ----- dataset -----
 ds = load_dataset("bigcode/the-stack-smol", split=f"train[:{args.rows}]")
+# A small held-out slice for evaluation
+eval_ds = load_dataset("bigcode/the-stack-smol", split="train[100000:101000]")
 
 def tok_func(batch):
     return tok(
@@ -92,6 +99,7 @@ def tok_func(batch):
     )
 
 tokenized = ds.map(tok_func, batched=True, remove_columns=ds.column_names)
+tokenized_eval = eval_ds.map(tok_func, batched=True, remove_columns=eval_ds.column_names)
 
 # ----- training args -----
 training_args = TrainingArguments(
@@ -103,6 +111,7 @@ training_args = TrainingArguments(
     bf16=True,
     optim="paged_adamw_8bit",
     logging_steps=50,
+    evaluation_strategy="epoch",
     include_tokens_per_second=True,
     save_strategy="epoch",
     dataloader_num_workers=8,
@@ -121,10 +130,20 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=tokenized,
+    eval_dataset=tokenized_eval,
     data_collator=collator,
 )
 
-trainer.train()
+os.makedirs("outputs/scaling_run_h100nvl", exist_ok=True)
+train_result = trainer.train()
 trainer.save_model("outputs/scaling_run_h100nvl/lora_adapter")
 
-print("Training finished, adapter saved to outputs/scaling_run_h100nvl")
+eval_metrics = trainer.evaluate()
+seq_len = len(tokenized[0]["input_ids"])
+tokens_seen = seq_len * len(tokenized) * training_args.num_train_epochs
+metrics = {**train_result.metrics, **eval_metrics,
+           "tokens_total": tokens_seen, "tokens_seen": tokens_seen}
+with open("outputs/scaling_run_h100nvl/metrics.json", "w") as f:
+    json.dump(metrics, f, indent=2)
+
+print("Training finished, metrics written to outputs/scaling_run_h100nvl")
