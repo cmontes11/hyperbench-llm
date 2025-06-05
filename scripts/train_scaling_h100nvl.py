@@ -37,6 +37,14 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+# Determine the GPU this process should use. When launched with ``accelerate``
+# each process receives a ``LOCAL_RANK`` environment variable specifying the
+# CUDA device index it should operate on. Using this ensures 4-bit weights are
+# loaded directly onto the correct device rather than moved later by
+# ``accelerate``, which would raise an error.
+local_rank = int(os.environ.get("LOCAL_RANK", 0))
+torch.cuda.set_device(local_rank)
+
 # ----- 4-bit quantized model -----
 bnb_cfg = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -58,7 +66,7 @@ tok = AutoTokenizer.from_pretrained(
 model = AutoModelForCausalLM.from_pretrained(
     "meta-llama/Meta-Llama-3-8B-Instruct",
     quantization_config=bnb_cfg,
-    device_map="auto",
+    device_map={"": local_rank},
     use_auth_token=hf_token,
 )
 
@@ -84,6 +92,13 @@ lora_cfg = LoraConfig(
 model = get_peft_model(model, lora_cfg)
 model.print_trainable_parameters()
 model.gradient_checkpointing_enable()
+
+# Enable gradient checkpointing for memory savings. Using the non-reentrant
+# variant avoids duplicate autograd hooks when combined with LoRA under DDP.
+model.gradient_checkpointing_enable(
+    gradient_checkpointing_kwargs={"use_reentrant": False}
+)
+model.enable_input_require_grads()
 
 # ----- dataset -----
 ds = load_dataset("bigcode/the-stack-smol", split=f"train[:{args.rows}]")
@@ -111,7 +126,7 @@ training_args = TrainingArguments(
     bf16=True,
     optim="paged_adamw_8bit",
     logging_steps=50,
-    evaluation_strategy="epoch",
+    eval_strategy="epoch",
     include_tokens_per_second=True,
     save_strategy="epoch",
     dataloader_num_workers=8,
