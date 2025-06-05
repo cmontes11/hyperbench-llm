@@ -104,7 +104,7 @@ tokenized_eval = eval_ds.map(tok_func, batched=True, remove_columns=eval_ds.colu
 # ----- training args -----
 training_args = TrainingArguments(
     output_dir="outputs/scaling_run_h100nvl",
-    per_device_train_batch_size=16,  # 16 * 2 GPUs = 32 global
+    per_device_train_batch_size=64,  # 16 * 2 GPUs = 32 global
     gradient_accumulation_steps=1,
     num_train_epochs=1,
     learning_rate=3e-4,
