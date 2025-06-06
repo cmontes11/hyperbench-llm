@@ -1,6 +1,6 @@
 # hyperbench-llm
 
-**Version 0.1**
+**Version 0.2**
 Tools and utilities for benchmarking and optimizing [**Llama‑8B**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) so it can run efficiently on a single RTX&nbsp;4080.
 
 The project aims to understand the memory and performance trade‑offs when deploying Llama‑8B on consumer GPUs. Training or fine‑tuning typically happens on powerful cloud hardware, while inference and benchmarking take place locally. The scripts below measure memory usage, merge LoRA adapters, and provide simple training helpers so you can experiment with different setups.
@@ -12,15 +12,17 @@ The project aims to understand the memory and performance trade‑offs when depl
 Scripts now live in **`scripts/`**, configurations in **`configs/`**, and generated images in **`images/`**.
 
 * **scripts/bench.py** – Benchmark a model to measure speed, VRAM use, parameter counts and perplexity on a dataset split.
-* **scripts/merge_lora.py** – Merge a LoRA/PEFT adapter into a base model for faster inference.
 * **scripts/gpu_memory_test.py** – Show detailed GPU memory footprint for a given model.
-* **scripts/train_naive.py** – Minimal example for finetuning or adapter training.
+* **scripts/merge_lora.py** – Merge a LoRA/PEFT adapter into a base model for faster inference.
 * **scripts/train_fast.py** – Speed-tuned training for A100 GPUs.
-* **scripts/train_scaling.py** – Variable dataset training for scaling-law experiments using the sweep's best hyper-parameters.
 * **scripts/train_h100.py** – Sweep-ready training script for H100 GPUs.
+* **scripts/train_naive.py** – Minimal example for finetuning or adapter training.
+* **scripts/train_scaling.py** – Variable dataset training for scaling-law experiments using the sweep's best hyper-parameters.
+* **scripts/train_scaling_h100nvl.py** – Dual-GPU variant for H100 NVL systems.
 * **configs/qlora_loss.yaml** – Example W&B sweep configuration.
 * **environment.yml** – Conda environment specification with all required packages.
 * **images/sweep results.png** – Example sweep results image.
+* **images/scaling analysis.png** – Example scaling analysis chart.
 
 ---
 
