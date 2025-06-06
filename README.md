@@ -179,4 +179,7 @@ lora_alpha lora_r     lr   train_loss
 - [ ] Deploy to RTX 4080 for maximizing tokens/sec
 - [ ] Quantization experiments
 
+### v0.4
+- [ ] Distillation training
+
 
