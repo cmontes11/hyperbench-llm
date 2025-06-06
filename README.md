@@ -180,6 +180,25 @@ lines follow a mostly linear trend, illustrating the scaling law. However,
 the final curve flattens, meaning the model stops improving after 20k rows
 and gains little from 40k.
 
+The plot was produced by running
+`scripts/train_scaling_h100nvl.py` in parallel on two GPUs for each dataset
+size (1k–40k rows). After training, the adapters were merged and benchmarked
+to generate the final results:
+
+```bash
+# Train
+accelerate launch scripts/train_scaling_h100nvl.py --rows 40000
+# Merge
+python scripts/merge_lora.py --ckpt meta-llama/Meta-Llama-3-8B-Instruct \
+  --adapter outputs/scaling_run_h100nvl/lora_adapter_40k \
+  --out outputs/merged_models/merged_40k
+# Bench
+python scripts/bench.py --ckpt outputs/merged_models/merged_40k \
+  --ppl_dataset bigcode/the-stack-smol \
+  --ppl_split train[100000:101000] \
+  --out outputs/merged_models/merged_40k.json
+```
+
 ## TODO
 
 ### v0.2
