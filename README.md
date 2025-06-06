@@ -169,10 +169,20 @@ lora_alpha lora_r     lr   train_loss
 - [x] Environment setup guide
 - [x] Parameter sweep utilities
 
+### v0.2
+- [x] Scaling law experiments
+
+![Scaling analysis](images/scaling%20analysis.png)
+
+This figure shows four scaling curves on log–log axes. Training with just
+1k rows appears as the smallest point, while 40k rows is the largest. The
+lines follow a mostly linear trend, illustrating the scaling law. However,
+the final curve flattens, meaning the model stops improving after 20k rows
+and gains little from 40k.
+
 ## TODO
 
 ### v0.2
-- [ ] Scaling law experiments
 - [ ] Model compression techniques
 
 ### v0.3
