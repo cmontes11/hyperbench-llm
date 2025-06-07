@@ -169,6 +169,9 @@ lora_alpha lora_r     lr   train_loss
 ```
 
 ![Sweep results](images/sweep%20results.png)
+
+This figure shows mean loss per each hyperparameter: LoRA Alpha, LoRA Rank, Learning Rate. The top and middle plots both show minimal change across their respective hyperparameter however the bottom plot indicates strongly that as the learning rate decreases the mean loss also decreases as well as the highest and lowest values at that parameter value. This indicates that a lower learning rate is linked to increased model performance for this configuration.
+
 ## Version 0.2 – Scaling Law Experiments
 Files used: `scripts/train_scaling_h100nvl.py`, `scripts/train_scaling.py`, `scripts/merge_lora.py`, and `scripts/bench.py`.
 
