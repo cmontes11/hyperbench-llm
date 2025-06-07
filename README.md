@@ -1,10 +1,19 @@
 # hyperbench-llm
 
-**Version 0.3**
 Tools and utilities for benchmarking and optimizing [**Llama‑8B**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) so it can run efficiently on a single RTX&nbsp;4080.
 
 The project aims to understand the memory and performance trade‑offs when deploying Llama‑8B on consumer GPUs. Training or fine‑tuning typically happens on powerful cloud hardware, while inference and benchmarking take place locally. The scripts below measure memory usage, merge LoRA adapters, and provide simple training helpers so you can experiment with different setups.
 
+
+## Version Highlights
+- **v0.3 – Compression Experiments**
+  Deploy on an RTX 4080 and test quantization with the `llama.cpp` container to maximize tokens per second.
+- **v0.2 – Scaling Laws**
+  Run variable‑sized datasets on dual H100 NVL GPUs using `train_scaling_h100nvl.py` and analyze the resulting curves.
+- **v0.1 – Training Helpers**
+  Provide naive and fast training scripts plus a Weights & Biases sweep configuration for hyper‑parameter tuning.
+- **v0.0 – Baseline Utilities**
+  Initial benchmarking, LoRA merging and GPU memory profiling tools.
 ---
 
 ## Files and Descriptions
@@ -83,7 +92,7 @@ For fast code benchmarking consider the following datasets:
 - [`bigcode/the-stack-smol`](https://huggingface.co/datasets/bigcode/the-stack-smol)
 - [`google-research-datasets/mbpp`](https://huggingface.co/datasets/google-research-datasets/mbpp)
 
-## Baseline Benchmark Results (RTX 4080)
+## Version 0.0 – Baseline Benchmarks
 
 The following results were obtained on a single RTX&nbsp;4080 using
 `bigcode/the-stack-smol` to evaluate perplexity. The fine‑tuned model
@@ -136,7 +145,7 @@ Output:
 The merged model improves perplexity from **3.69** to **2.42** while
 keeping memory usage constant and slightly increasing tokens per second.
 
-## Parameter Sweep Results
+## Version 0.1 – Parameter Sweep & Training Helpers
 
 This release introduces an automated hyper-parameter sweep using
 [Weights & Biases](https://wandb.ai/). The sweep configuration lives in
@@ -160,6 +169,55 @@ lora_alpha lora_r     lr   train_loss
 ```
 
 ![Sweep results](images/sweep%20results.png)
+## Version 0.2 – Scaling Law Experiments
+Files used: `scripts/train_scaling_h100nvl.py`, `scripts/train_scaling.py`, `scripts/merge_lora.py`, and `scripts/bench.py`.
+
+The plot below was produced by training adapters on dataset sizes from 1k–40k rows. After each run the adapters were merged and benchmarked:
+```bash
+# Train
+accelerate launch scripts/train_scaling_h100nvl.py --rows 40000
+# Merge
+python scripts/merge_lora.py --ckpt meta-llama/Meta-Llama-3-8B-Instruct \
+  --adapter outputs/scaling_run_h100nvl/lora_adapter_40k \
+  --out outputs/merged_models/merged_40k
+# Bench
+python scripts/bench.py --ckpt outputs/merged_models/merged_40k \
+  --ppl_dataset bigcode/the-stack-smol \
+  --ppl_split train[100000:101000] \
+  --out outputs/merged_models/merged_40k.json
+```
+
+![Scaling analysis](images/scaling%20analysis.png)
+
+This figure shows four scaling curves on log–log axes. Training with just
+1k rows appears as the smallest point, while 40k rows is the largest. The
+lines follow a mostly linear trend, illustrating the scaling law. However,
+the final curve flattens, meaning the model stops improving after 20k rows
+and gains little from 40k.
+## Version 0.3 – Compression & Quantization
+Files used: `scripts/merge_lora.py`, `scripts/bench.py` and the `llama.cpp` container.
+
+To measure the quantization trade-offs:
+```bash
+# Quantize the model (e.g. to Q6_K)
+./bin/llama-quantize <Uncompressed Model Location> <Quantized Model Location> Q6_K
+
+# Perplexity test
+./bin/llama-perplexity -m <Quantized Model Location> -f eval_slice.txt -n 128 -t 8
+
+# Tokens/sec benchmark
+./bin/llama-bench -m <Quantized Model Location> -n 512
+```
+
+![Compression analysis](images/compression%20analysis.png)
+
+This figure contains four subplots:
+1. **Top left** : tokens per second vs. perplexity showing the speed/accuracy trade-off. The best configuration is marked with a star. Note: exponential increase in perplexity vs tokens/sec.
+2. **Top right** : tokens per second vs. model size in gigabytes with the best model starred. Note: linear relationship between model size and tokens/sec.
+3. **Bottom left** : inference speed by model where each point is labeled with its size in gigabytes and includes error bars for variability.
+4. **Bottom right** : perplexity for each model, again with the best one highlighted. Note: exponential increase in perplexity vs model size.
+
+
 
 ## Completed
 
@@ -176,68 +234,12 @@ lora_alpha lora_r     lr   train_loss
 ### v0.2
 - [x] Scaling law experiments
 
-![Scaling analysis](images/scaling%20analysis.png)
-
-This figure shows four scaling curves on log–log axes. Training with just
-1k rows appears as the smallest point, while 40k rows is the largest. The
-lines follow a mostly linear trend, illustrating the scaling law. However,
-the final curve flattens, meaning the model stops improving after 20k rows
-and gains little from 40k.
-
-The plot was produced by running
-`scripts/train_scaling_h100nvl.py` in parallel on two GPUs for each dataset
-size (1k–40k rows). After training, the adapters were merged and benchmarked
-to generate the final results:
-
-```bash
-# Train
-accelerate launch scripts/train_scaling_h100nvl.py --rows 40000
-# Merge
-python scripts/merge_lora.py --ckpt meta-llama/Meta-Llama-3-8B-Instruct \
-  --adapter outputs/scaling_run_h100nvl/lora_adapter_40k \
-  --out outputs/merged_models/merged_40k
-# Bench
-python scripts/bench.py --ckpt outputs/merged_models/merged_40k \
-  --ppl_dataset bigcode/the-stack-smol \
-  --ppl_split train[100000:101000] \
-  --out outputs/merged_models/merged_40k.json
-```
 
 ### v0.3
 - [x] Deploy to RTX 4080 for maximizing tokens/sec
 - [x] Quantization experiments
 - [x] Model compression techniques
 
-To measure the quantization trade-offs we relied on the
-[llama.cpp container](https://github.com/ggml-org/llama.cpp/pkgs/container/llama.cpp).
-The metrics were gathered in three steps: quantization of the merged model,
-a perplexity run and finally a throughput benchmark. The exact paths will
-vary depending on your setup, so they are shown here as placeholders:
-
-```bash
-# Quantize the model (e.g. to Q6_K)
-./bin/llama-quantize <Uncompressed Model Location> \
-  <Quantized Model Location> Q6_K
-
-# Perplexity test
-./bin/llama-perplexity -m <Quantized Model Location> \
-  -f eval_slice.txt -n 128 -t 8
-
-# Tokens/sec benchmark
-./bin/llama-bench -m <Quantized Model Location> -n 512
-```
-
-![Compression analysis](images/compression%20analysis.png)
-
-This figure contains four subplots:
-1. **Top left** : tokens per second vs. perplexity showing the speed/accuracy
-   trade-off. The best configuration is marked with a star. Note: exponential increase in perplexity vs tokens/sec.
-2. **Top right** : tokens per second vs. model size in gigabytes with the best
-   model starred. Note: linear relationship between model size and tokens/sec.
-3. **Bottom left** : inference speed by model where each point is labeled with
-   its size in gigabytes and includes error bars for variability.
-4. **Bottom right** : perplexity for each model, again with the best one
-   highlighted. Note: exponential increase in perplexity vs model size.
 
 ## TODO
 
