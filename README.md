@@ -208,6 +208,25 @@ python scripts/bench.py --ckpt outputs/merged_models/merged_40k \
 - [x] Quantization experiments
 - [x] Model compression techniques
 
+To measure the quantization trade-offs we relied on the
+[llama.cpp container](https://github.com/ggml-org/llama.cpp/pkgs/container/llama.cpp).
+The metrics were gathered in three steps: quantization of the merged model,
+a perplexity run and finally a throughput benchmark. The exact paths will
+vary depending on your setup, so they are shown here as placeholders:
+
+```bash
+# Quantize the model (e.g. to Q6_K)
+./bin/llama-quantize <Uncompressed Model Location> \
+  <Quantized Model Location> Q6_K
+
+# Perplexity test
+./bin/llama-perplexity -m <Quantized Model Location> \
+  -f eval_slice.txt -n 128 -t 8
+
+# Tokens/sec benchmark
+./bin/llama-bench -m <Quantized Model Location> -n 512
+```
+
 ![Compression analysis](images/compression%20analysis.png)
 
 This figure contains four subplots:
