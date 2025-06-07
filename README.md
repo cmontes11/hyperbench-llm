@@ -23,8 +23,8 @@ Scripts now live in **`scripts/`**, configurations in **`configs/`**, and genera
 * **environment.yml** – Conda environment specification with all required packages.
 * **images/sweep results.png** – Example sweep results image.
 * **images/scaling analysis.png** – Example scaling analysis chart.
-* **compression analysis.png** – Tokens/sec vs perplexity trade-off chart.
-* **eval_slicer.py** – Save a slice of the evaluation dataset.
+* **images/compression analysis.png** – Four-panel compression analysis chart.
+* **scripts/eval_slicer.py** – Save a slice of the evaluation dataset.
 
 ---
 
@@ -208,11 +208,17 @@ python scripts/bench.py --ckpt outputs/merged_models/merged_40k \
 - [x] Quantization experiments
 - [x] Model compression techniques
 
-![Compression analysis](compression%20analysis.png)
+![Compression analysis](images/compression%20analysis.png)
 
-This chart plots tokens per second against perplexity for several compression
-methods. More compression yields faster throughput and smaller models, but
-perplexity rises, meaning quality worsens.
+This figure contains four subplots:
+1. **Top left** – tokens per second vs. perplexity showing the speed/accuracy
+   trade-off. The best configuration is marked with a star.
+2. **Top right** – tokens per second vs. model size in gigabytes with the best
+   model starred.
+3. **Bottom left** – inference speed by model where each point is labeled with
+   its size in gigabytes and includes error bars for variability.
+4. **Bottom right** – perplexity for each model, again with the best one
+   highlighted.
 
 ## TODO
 
