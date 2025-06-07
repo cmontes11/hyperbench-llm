@@ -18,4 +18,4 @@ with open("eval_slice.txt", "w", encoding="utf-8") as f:
         if content:
             f.write(content + "\n")
 
-print("✅ Done! Wrote lines {} to {} to eval_slice.txt".format(start + 1, end))
+print("Wrote lines {} to {} to eval_slice.txt".format(start + 1, end))
