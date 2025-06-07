@@ -1,6 +1,6 @@
 # hyperbench-llm
 
-**Version 0.2**
+**Version 0.3**
 Tools and utilities for benchmarking and optimizing [**Llama‑8B**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) so it can run efficiently on a single RTX&nbsp;4080.
 
 The project aims to understand the memory and performance trade‑offs when deploying Llama‑8B on consumer GPUs. Training or fine‑tuning typically happens on powerful cloud hardware, while inference and benchmarking take place locally. The scripts below measure memory usage, merge LoRA adapters, and provide simple training helpers so you can experiment with different setups.
@@ -23,6 +23,8 @@ Scripts now live in **`scripts/`**, configurations in **`configs/`**, and genera
 * **environment.yml** – Conda environment specification with all required packages.
 * **images/sweep results.png** – Example sweep results image.
 * **images/scaling analysis.png** – Example scaling analysis chart.
+* **compression analysis.png** – Tokens/sec vs perplexity trade-off chart.
+* **eval_slicer.py** – Save a slice of the evaluation dataset.
 
 ---
 
@@ -201,16 +203,26 @@ python scripts/bench.py --ckpt outputs/merged_models/merged_40k \
   --out outputs/merged_models/merged_40k.json
 ```
 
+### v0.3
+- [x] Deploy to RTX 4080 for maximizing tokens/sec
+- [x] Quantization experiments
+- [x] Model compression techniques
+
+![Compression analysis](compression%20analysis.png)
+
+This chart plots tokens per second against perplexity for several compression
+methods. More compression yields faster throughput and smaller models, but
+perplexity rises, meaning quality worsens.
+
 ## TODO
 
-### v0.2
-- [ ] Model compression techniques
-
-### v0.3
-- [ ] Deploy to RTX 4080 for maximizing tokens/sec
-- [ ] Quantization experiments
-
 ### v0.4
+- [ ] Custom datasets
+
+### v0.5
+- [ ] Custom models
+
+### v0.6
 - [ ] Distillation training
 
 
