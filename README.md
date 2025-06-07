@@ -211,14 +211,14 @@ python scripts/bench.py --ckpt outputs/merged_models/merged_40k \
 ![Compression analysis](images/compression%20analysis.png)
 
 This figure contains four subplots:
-1. **Top left** – tokens per second vs. perplexity showing the speed/accuracy
-   trade-off. The best configuration is marked with a star.
-2. **Top right** – tokens per second vs. model size in gigabytes with the best
-   model starred.
-3. **Bottom left** – inference speed by model where each point is labeled with
+1. **Top left** : tokens per second vs. perplexity showing the speed/accuracy
+   trade-off. The best configuration is marked with a star. Note: exponential increase in perplexity vs tokens/sec.
+2. **Top right** : tokens per second vs. model size in gigabytes with the best
+   model starred. Note: linear relationship between model size and tokens/sec.
+3. **Bottom left** : inference speed by model where each point is labeled with
    its size in gigabytes and includes error bars for variability.
-4. **Bottom right** – perplexity for each model, again with the best one
-   highlighted.
+4. **Bottom right** : perplexity for each model, again with the best one
+   highlighted. Note: exponential increase in perplexity vs model size.
 
 ## TODO
 
