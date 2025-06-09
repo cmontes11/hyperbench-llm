@@ -7,13 +7,13 @@ The project aims to understand the memory and performance trade‑offs when depl
 
 ## Version Highlights
 - **v0.3 – Compression Experiments**
-  Deploy on an RTX 4080 and test quantization with the `llama.cpp` container to maximize tokens per second.
+  Quantization cut model size from 8 GB to 4.8 GB and boosted throughput from 17.5 → 108 tok/s at 3.27 perplexity.
 - **v0.2 – Scaling Laws**
-  Run variable‑sized datasets on dual H100 NVL GPUs using `train_scaling_h100nvl.py` and analyze the resulting curves.
+  Trained 1k–40k row datasets on dual H100 NVL GPUs for ~2h ($10), locating diminishing returns after 20k rows.
 - **v0.1 – Training Helpers**
-  Provide naive and fast training scripts plus a Weights & Biases sweep configuration for hyper‑parameter tuning.
+  Swept 22 parameter configs in ~5h with two W&B agents (A100 + H100) for about $25.
 - **v0.0 – Baseline Utilities**
-  Initial benchmarking, LoRA merging and GPU memory profiling tools.
+  Baseline Llama‑8B: 17.5 tok/s and 3.69 perplexity on a single RTX 4080.
 ---
 
 ## Files and Descriptions
