@@ -18,7 +18,7 @@ The project aims to understand the memory and performance trade‑offs when depl
 
 ## Files and Descriptions
 
-Scripts now live in **`scripts/`**, configurations in **`configs/`**, and generated images in **`images/`**.
+Scripts are in **`scripts/`**, configurations in **`configs/`**, and figures are in **`images/`**.
 
 * **scripts/bench.py** – Benchmark a model to measure speed, VRAM use, parameter counts and perplexity on a dataset split.
 * **scripts/gpu_memory_test.py** – Show detailed GPU memory footprint for a given model.
