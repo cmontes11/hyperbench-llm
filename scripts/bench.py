@@ -15,6 +15,7 @@ from transformers import (
     AutoTokenizer,
     BitsAndBytesConfig,
 )
+import os
 try:
     from peft import PeftModel
 except ImportError:
@@ -24,13 +25,21 @@ def load_model(checkpoint, adapter=None):
     bnb = BitsAndBytesConfig(
         load_in_4bit=True, bnb_4bit_compute_dtype="bfloat16"
     )
-    tok = AutoTokenizer.from_pretrained(checkpoint, padding_side="left")
+    # Read auth token from environment (compatible with your other scripts)
+    hf_token = os.getenv("HF_TOK") or os.getenv("HUGGINGFACE_HUB_TOKEN") or os.getenv("HF_TOKEN")
+
+    tok_kwargs = {"padding_side": "left"}
+    mdl_kwargs = {"quantization_config": bnb, "device_map": "auto"}
+    if hf_token:
+        tok_kwargs["use_auth_token"] = hf_token
+        mdl_kwargs["use_auth_token"] = hf_token
+
+    tok = AutoTokenizer.from_pretrained(checkpoint, **tok_kwargs)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(
-        checkpoint, 
-        quantization_config=bnb, 
-        device_map="auto"
+        checkpoint,
+        **mdl_kwargs,
     )
     if adapter and PeftModel:
         model = PeftModel.from_pretrained(model, adapter)
