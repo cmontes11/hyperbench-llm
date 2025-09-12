@@ -7,6 +7,7 @@ channels:
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
+  - cmake
   - bzip2=1.0.8=h5eee18b_6
   - ca-certificates=2025.2.25=h06a4308_0
   - ld_impl_linux-64=2.40=h12ee557_0
@@ -51,7 +52,7 @@ dependencies:
       - gitdb==4.0.12
       - gitpython==3.1.44
       - hf-xet==1.1.2
-      - huggingface-hub==0.32.4
+      - huggingface_hub[cli]==0.32.4
       - idna==3.10
       - importlib-metadata==8.7.0
       - jinja2==3.1.4
