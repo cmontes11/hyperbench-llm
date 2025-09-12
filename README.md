@@ -1,11 +1,13 @@
 # hyperbench-llm
 
-Tools and utilities for benchmarking and optimizing [**Llama‑8B**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) so it can run efficiently on a single RTX&nbsp;4080.
+Tools and utilities for benchmarking and optimizing [**Llama‑8B**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) so it can run efficiently on a single RTX&nbsp;4080. Includes an easy-to-run llama.cpp demo that downloads a model, quantizes variants, runs speed/perplexity, and saves a ready-to-share figure.
 
 The project aims to understand the memory and performance trade‑offs when deploying Llama‑8B on consumer GPUs. Training or fine‑tuning typically happens on powerful cloud hardware, while inference and benchmarking take place locally. The scripts below measure memory usage, merge LoRA adapters, and provide simple training helpers so you can experiment with different setups.
 
 
 ## Version Highlights
+- **v0.4 – Simple llama.cpp Demo**
+  A single script (`scripts/demo_llamacpp.py`) that merges (optional) LoRA, converts to GGUF, quantizes variants, runs `llama-perplexity` and `llama-bench`, and saves `outputs/demo/metrics.json` and `outputs/demo/demo.png`.
 - **v0.3 – Compression Experiments**
   Quantization cut model size from 8 GB to 4.8 GB and boosted throughput from 17.5 → 108 tok/s at 3.27 perplexity.
 - **v0.2 – Scaling Laws**
@@ -21,6 +23,7 @@ The project aims to understand the memory and performance trade‑offs when depl
 Scripts are in **`scripts/`**, configurations in **`configs/`**, and figures are in **`images/`**.
 
 * **scripts/bench.py** – Benchmark a model to measure speed, VRAM use, parameter counts and perplexity on a dataset split.
+* **scripts/demo_llamacpp.py** – Final llama.cpp demo: converts HF → GGUF, quantizes variants, and runs perplexity/speed; outputs `outputs/demo/metrics.json` and `outputs/demo/demo.png`.
 * **scripts/gpu_memory_test.py** – Show detailed GPU memory footprint for a given model.
 * **scripts/merge_lora.py** – Merge a LoRA/PEFT adapter into a base model for faster inference.
 * **scripts/train_fast.py** – Speed-tuned training for A100 GPUs.
@@ -34,6 +37,37 @@ Scripts are in **`scripts/`**, configurations in **`configs/`**, and figures are
 * **images/scaling analysis.png** – Example scaling analysis chart.
 * **images/compression analysis.png** – Four-panel compression analysis chart.
 * **scripts/eval_slicer.py** – Save a slice of the evaluation dataset.
+
+---
+
+## Run the Demo (v0.4)
+
+The demo does everything end-to-end: clone, authenticate, quantize, benchmark, and plot. Resulting figure: `outputs/demo/demo.png`.
+
+Steps:
+- **Clone the repo** and install Hugging Face CLI
+- **Set `HF_TOK`** with your token
+- **Login** to Hugging Face
+- **Run the demo** script (CUDA build by default; add `--force_cpu` to run on CPU)
+
+```bash
+git clone https://github.com/cmontes11/hyperbench-llm
+python3 -m pip install -U "huggingface_hub[cli]"
+
+export HF_TOK=***********************************
+huggingface-cli login
+# enter huggingface key when prompted
+
+python scripts/demo_llamacpp.py \
+  --ckpt meta-llama/Meta-Llama-3-8B-Instruct \
+  --variants Q8_0 Q4_K_M Q3_K_S \
+  --cuda_arch 90 \
+  --rebuild
+```
+
+Expected output figure (created after the run):
+
+![Demo output](outputs/demo/demo.png)
 
 ---
 
@@ -83,7 +117,7 @@ Scripts are in **`scripts/`**, configurations in **`configs/`**, and figures are
    ```
    The agent executes `python scripts/train_h100.py` with its chosen arguments.
 
-Before running GPU tests or training, set the `HF_TOK` environment variable with your Hugging Face token so the scripts can download the model.
+Before running GPU tests or training, set the `HF_TOK` environment variable with your Hugging Face token so the scripts can download the model. For an end-to-end example, see the new Demo section above (v0.4).
 
 ## Dataset Recommendations
 
@@ -243,16 +277,19 @@ This figure contains four subplots:
 - [x] Quantization experiments
 - [x] Model compression techniques
 
+### v0.4
+- [x] Simple llama.cpp demo (`scripts/demo_llamacpp.py`) with end-to-end plot
+
 
 ## TODO
 
-### v0.4
+### v0.5
 - [ ] Custom datasets
 
-### v0.5
+### v0.6
 - [ ] Custom models
 
-### v0.6
+### v0.7
 - [ ] Distillation training
 
 
